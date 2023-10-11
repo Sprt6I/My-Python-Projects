@@ -1,5 +1,6 @@
 from PySide6.QtWidgets import *
-from PySide6.QtCore import Qt
+import PySide6.QtCore as QtCore
+from PySide6.QtCore import *
 from PySide6.QtGui import *
 import sys
 
@@ -24,31 +25,46 @@ class MainWindow(QMainWindow):
         Main = QFrame(self) #New Main Window
         Main.setFrameShape(QFrame.StyledPanel)
         Main.setFrameShadow(QFrame.Raised)
-        Main.setStyleSheet("border-radius: 50px; background-color: lightblue;text-align: center;") #Sets stylesheet to window
+        Main.setStyleSheet("background-color:black;border-radius: 50px;text-align: center; color:white") #Sets stylesheet to window
         self.setWindowFlag(Qt.FramelessWindowHint) #Makes Window Frameless
         self.setAttribute(Qt.WA_TranslucentBackground) #Makes Window's background transparent
+    
         
-        TitleFont = QFont("Arial", 25)
-        '''
-        t = "Hello, PySide6!"
-        Main.label = QLabel(t, Main)
-        Main.label.setFont(TitleFont)
-        Main.label.setStyleSheet("text-align: center;  background-color: transparent;")
-        Main.label.setGeometry(Width/2-int(len(t)*8), 50,len(t)*25, 30)
-        '''
         
-        Main.label = MyPyQt.MyLabel("Hello, PySite6!", "background-color: transparent;", font=TitleFont)
         
-        Main.but = QPushButton("Click me !", self)
-        Main.but.setGeometry(Width/2-int(Main.but.width()/2), 100, 200, 30)
-        Main.but.clicked.connect(self.on_button_click)
+        label = QLabel("Ubank", Main)
+        label.setFont(QFont("Arial", 40))
+        label.setStyleSheet("text-align: center;  background-color: transparent;")
+        label.setGeometry(Width/2-int(label.text().__sizeof__()*1.6), 10,label.text().__sizeof__()*int(25/2), 45)
+        
+        label1 = QLabel("Welcome User", Main)
+        label1.setFont(QFont("Arial", 35))
+        label1.setStyleSheet("text-align: center;  background-color: transparent;")
+        label1.setGeometry(Width/2-int(label.text().__sizeof__()*2.5), 60,label1.text().__sizeof__()*int(25/2), 50)
+        
+        but = QPushButton("Login", Main)
+        but.setGeometry(Width/2-int(but.text().__sizeof__()*4.2), Height/3, 200, 30)
+        but.setStyleSheet("background-color:black; color:white;border:1px solid white; border-radius: 15px;")
+        but.clicked.connect(self.exit_but)
+        
+        but = QPushButton("Register", Main)
+        but.setGeometry(Width/2-int(but.text().__sizeof__()/6), Height/3, 200, 30)
+        but.setStyleSheet("background-color:black; color:white;border:1px solid white; border-radius: 15px;")
+        but.clicked.connect(self.exit_but)
+        
+        
+        
+        but = QPushButton("Exit", Main)
+        but.setGeometry(Width/2-int(but.text().__sizeof__()*1.8), Height-40, 200, 30)
+        but.setStyleSheet("background-color:black; color:white;border:1px solid white; border-radius: 15px;")
+        but.clicked.connect(self.exit_but)
         
         
         
         self.setCentralWidget(Main) #Sets Main as Main Window or something
         
-    def on_button_click(self):
-        print("Button clicked!")
+    def exit_but(self):
+        QApplication.quit()
         
 if __name__ == "__main__":
     app = QApplication(sys.argv)
