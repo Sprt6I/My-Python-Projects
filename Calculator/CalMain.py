@@ -94,7 +94,7 @@ class Calc(QWidget):
         layRow4 = QHBoxLayout()
         
         but12 = QPushButton("+/-")
-        but12.clicked.connect(lambda:self.Meine(but12.text()))
+        but12.clicked.connect(lambda:self.Meine('lsn'))
         layRow4.addWidget(but12)
         
         but13 = QPushButton("0")
@@ -140,6 +140,7 @@ class Calc(QWidget):
         self.suma2 = str(self.suma2)
         
         if n=="C":
+            self.c = 0
             self.suma1 = ''
             self.suma2 = ''
             self.but = ''
@@ -147,7 +148,13 @@ class Calc(QWidget):
             return
         
         if n=="=" and self.but:
-            self.suma2 = float(self.suma2)
+            if len(self.suma2)>0:
+                self.suma2 = float(self.suma2)
+            else:
+                self.suma2=0
+                if self.suma2==0 and self.but=='/':
+                    self.dev0()
+                    return
             print(round(eval(f'{self.suma1}{self.but}{self.suma2}'), 5))
             suma = round(eval(f"{self.suma1}{self.but}{self.suma2}"), 5)
             self.Holder.setText(f'{self.suma1} {self.but} {self.suma2} = {suma}')
@@ -157,26 +164,62 @@ class Calc(QWidget):
             return
         
         if n in "+-/*":
-            
             self.c = 1
             self.but = n
             self.suma1 = float(self.suma1)
         
         if self.c==0 and n not in "+-/*=":
-            print(self.suma1)
             if n=="Back":
                 if len(self.suma1)>1:
                     self.suma1 = "".join([_ for _ in self.suma1].pop())
                 else:
                     self.suma1=0
+            elif n =='lsn':
+                if int(self.suma1)>0:
+                    temp = [_ for _ in self.suma1]
+                    temp.insert(0, '-')
+                    self.suma1="".join(temp)
+                    print(temp)
+                else:
+                    temp = [_ for _ in self.suma1]
+                    temp.pop(0)
+                    self.suma1="".join(temp)
+                    print(temp)
             else:
                 self.suma1+=n
+            
         if self.c==1 and n not in "+-/*=":
-            self.suma2+=n
+            if self.but=='/' and n=='0':
+                self.dev0()
+                return
+                
+            if n=="Back":
+                if len(self.suma2)>1:
+                    self.suma2 = "".join([_ for _ in self.suma2].pop())
+                else:
+                    self.suma2=0
+            elif n =='lsn':
+                if int(self.suma2)>0:
+                    temp = [_ for _ in self.suma2]
+                    temp.insert(0, '-')
+                    self.suma2="".join(temp)
+                    print(temp)
+                else:
+                    temp = [_ for _ in self.suma2]
+                    temp.pop(0)
+                    self.suma2="".join(temp)
+                    print(temp)
+            else:
+                self.suma2+=n
             
         self.x = f'{self.suma1} {self.but} {self.suma2} = '
         self.Holder.setText(self.x)
         
+    def dev0(self):
+        message = QMessageBox()
+        message.setWindowTitle("Bro...")
+        message.setInformativeText("U can't devide by 0 :/")
+        ret = message.exec()
         
         
 app = QApplication(sys.argv)
