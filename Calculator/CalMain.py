@@ -4,25 +4,41 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 import sys
 
+app = QApplication(sys.argv)
+app.setStyleSheet(
+    'QVBoxLayout {margin:0px;padding:0px;}'
+    'QHBoxLayout {margin:0px; padding:0px;}'
+    'QPushButton {height:55%;background-color: black;color:white;border:1px solid white;margin:0px;padding:0px;}'
+)
 
 class Calc(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Calculator")
+        self.setStyleSheet("background-color:black; color: white;margin:0;padding:0;")
+        #self.setGeometry(900,500,180,180)
+        self.setFixedSize(340,340)
         
-        self.c = 0
-        self.but = ''
-        self.suma1 = ''
-        self.suma2 = ''
-        self.x = ''
+        self.dragging = False
+        self.symbol = ''
+        self.num1 = ''
+        self.num2 = ''
         
-        lay = QVBoxLayout()
+        lay = QVBoxLayout(self)
+        lay.setContentsMargins(0, 0, 0, 0)
+        lay.setSpacing(0)
+        #lay.setStretch(0, 0)
+
         
         self.Holder = QLineEdit()
+        self.Holder.setStyleSheet("height:55%;margin:0px;padding:0px;font:20px;")
+        self.Holder.setReadOnly(True)
         lay.addWidget(self.Holder)
         
         #Row 1
         layRow1 = QHBoxLayout()
+        layRow1.setSpacing(0)
+        layRow1.setContentsMargins(0, 0, 0, 0)
             
         but0 = QPushButton("7")
         but0.clicked.connect(lambda:self.Meine(but0.text()))
@@ -40,12 +56,14 @@ class Calc(QWidget):
         but3.clicked.connect(lambda:self.Meine(but3.text()))
         layRow1.addWidget(but3)
 
-        lay.addLayout(layRow1)
+        lay.addLayout(layRow1, 0)
         
         
         
         #Row 2
         layRow2 = QHBoxLayout()
+        layRow2.setSpacing(0)
+        layRow2.setContentsMargins(0,0,0,0)
         
         but4 = QPushButton("4")
         but4.clicked.connect(lambda:self.Meine(but4.text()))
@@ -63,12 +81,13 @@ class Calc(QWidget):
         but7.clicked.connect(lambda:self.Meine(but7.text()))
         layRow2.addWidget(but7)
         
-        lay.addLayout(layRow2)
+        lay.addLayout(layRow2, 0)
         
         
         
         #Row 3
         layRow3 = QHBoxLayout()
+        layRow3.setSpacing(0)
         
         but8 = QPushButton("1")
         but8.clicked.connect(lambda:self.Meine(but8.text()))
@@ -92,6 +111,7 @@ class Calc(QWidget):
         
         #Row 4
         layRow4 = QHBoxLayout()
+        layRow4.setSpacing(0)
         
         but12 = QPushButton("+/-")
         but12.clicked.connect(lambda:self.Meine('lsn'))
@@ -115,6 +135,7 @@ class Calc(QWidget):
         
         #Row 5
         layRow5 = QHBoxLayout()
+        layRow5.setSpacing(0)
         
         but16 = QPushButton("C")
         but16.clicked.connect(lambda:self.Meine(but16.text()))
@@ -124,9 +145,13 @@ class Calc(QWidget):
         but17.clicked.connect(lambda:self.Meine(but17.text()))
         layRow5.addWidget(but17)
         
-        but18 = QPushButton("=")
+        but18 = QPushButton("Round")
         but18.clicked.connect(lambda:self.Meine(but18.text()))
         layRow5.addWidget(but18)
+        
+        but19 = QPushButton("=")
+        but19.clicked.connect(lambda:self.Meine(but19.text()))
+        layRow5.addWidget(but19)
         
         lay.addLayout(layRow5)
         
@@ -136,93 +161,95 @@ class Calc(QWidget):
         print(data)
         
     def Meine(self, n):
-        self.suma1 = str(self.suma1)
-        self.suma2 = str(self.suma2)
+        self.num1 = str(self.num1)
+        self.num2 = str(self.num2)
         
-        if n=="C":
-            self.c = 0
-            self.suma1 = ''
-            self.suma2 = ''
-            self.but = ''
-            self.Holder.setText(f'')
+        if n=="C": #Deletes Everything
+            self.Del()
             return
         
-        if n=="=" and self.but:
-            if len(self.suma2)>0:
-                self.suma2 = float(self.suma2)
-            else:
-                self.suma2=0
-                if self.suma2==0 and self.but=='/':
-                    self.dev0()
-                    return
-            print(round(eval(f'{self.suma1}{self.but}{self.suma2}'), 5))
-            suma = round(eval(f"{self.suma1}{self.but}{self.suma2}"), 5)
-            self.Holder.setText(f'{self.suma1} {self.but} {self.suma2} = {suma}')
-            self.suma1 = suma
-            self.suma2 = ''
-            self.but = ''
-            return
-        
-        if n in "+-/*":
-            self.c = 1
-            self.but = n
-            self.suma1 = float(self.suma1)
-        
-        if self.c==0 and n not in "+-/*=":
-            if n=="Back":
-                if len(self.suma1)>1:
-                    self.suma1 = "".join([_ for _ in self.suma1].pop())
-                else:
-                    self.suma1=0
-            elif n =='lsn':
-                if int(self.suma1)>0:
-                    temp = [_ for _ in self.suma1]
-                    temp.insert(0, '-')
-                    self.suma1="".join(temp)
-                    print(temp)
-                else:
-                    temp = [_ for _ in self.suma1]
-                    temp.pop(0)
-                    self.suma1="".join(temp)
-                    print(temp)
-            else:
-                self.suma1+=n
+        if n=="Back":#Delete 1 char
+            self.Back()
             
-        if self.c==1 and n not in "+-/*=":
-            if self.but=='/' and n=='0':
+        if n=='lsn': #Changes number symbol: num>0: num=-num else +num
+            self.LSN()
+            
+        if n=='Round':
+            self.MyRound()
+            
+            
+        
+        if n=="=" and self.symbol: #Equals
+            self.num1 = float(self.num1) if self.num1!='' else 0
+            self.num2 = float(self.num2) if self.num2!='' else 0
+            if self.num2==0 and self.symbol=='/': #Shows Error Message if u want to devide by 0
                 self.dev0()
-                return
-                
-            if n=="Back":
-                if len(self.suma2)>1:
-                    self.suma2 = "".join([_ for _ in self.suma2].pop())
-                else:
-                    self.suma2=0
-            elif n =='lsn':
-                if int(self.suma2)>0:
-                    temp = [_ for _ in self.suma2]
-                    temp.insert(0, '-')
-                    self.suma2="".join(temp)
-                    print(temp)
-                else:
-                    temp = [_ for _ in self.suma2]
-                    temp.pop(0)
-                    self.suma2="".join(temp)
-                    print(temp)
-            else:
-                self.suma2+=n
-            
-        self.x = f'{self.suma1} {self.but} {self.suma2} = '
-        self.Holder.setText(self.x)
+                return 
+            suma = round(eval(f"{self.num1}{self.symbol}{self.num2}"), 5)
+            self.Holder.setText(f'{self.num1} {self.symbol} {self.num2} = {suma}')
+            self.num1 = suma
+            self.num2 = ''
+            self.symbol = ''
+            return
         
-    def dev0(self):
+        if n in "+-/*": #Sets symbol
+            self.symbol = n
+        
+        if self.symbol=='' and n in '1234567890.': #Sets 1 number
+            self.num1+=n
+            
+        if self.symbol!='' and n in '1234567890.': #Sets 2 Number
+                self.num2+=n
+            
+        self.Holder.setText(f'{self.num1} {self.symbol} {self.num2} = ') #Shows Calculations
+        
+    def dev0(self): #Devide By 0 Error Message
         message = QMessageBox()
         message.setWindowTitle("Bro...")
         message.setInformativeText("U can't devide by 0 :/")
         ret = message.exec()
         
+    def Del(self): #Sets everything to ''
+        self.num1 = ''
+        self.num2 = ''
+        self.symbol = ''
+        self.Holder.setText(f'')
+        return
+    
+    def LSN(self):
+        if self.symbol=='':
+            if (float(self.num1) if self.num1!='' else 0)>0:
+                temp = [_ for _ in self.num1]
+                temp.insert(0, '-')
+                self.num1="".join(temp)
+        else:
+            if (float(self.num2) if self.num2!='' else 0)>0:
+                temp = [_ for _ in self.num2]
+                temp.insert(0, '-')
+                self.num2="".join(temp)
+
+    
+    def Back(self):
+        if self.symbol=='':
+            if len(self.num1)>1:
+                self.num1 = "".join([_ for _ in self.num1][:-1])
+            else:
+                self.num1=0
+        else:
+            if len(self.num2)>1:
+                self.num2 = "".join([_ for _ in self.num1][:-1])
+            else:
+                self.num2=0
+                
+    def MyRound(self): #Rounds the number
+        if self.symbol=='':
+            self.num1= str(round(float(self.num1) if self.num1!='' else 0, 2))
+        else:
+            self.num2 = str(round(float(self.num2) if self.num2!='' else 0, 2))
+                
         
-app = QApplication(sys.argv)
+        
+
 window = Calc()
 window.show()
 app.exec()
