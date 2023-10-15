@@ -4,10 +4,19 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 import sys
 
+app = QApplication(sys.argv)
+app.setStyleSheet(
+    'QLineEdit {height:40%; font:30px;}'
+    'QComboBox {height:40%;border:1px solid white;font:20px;}'
+    'QPushButton {height: 40%;border:1px solid white; font:20px;}'
+    'QLabel {font:20px;}'
+)
+
 class Main(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Distance Corvertion")
+        self.setStyleSheet('background-color:black;color:white')
         
         lay0 = QVBoxLayout()
         
@@ -23,10 +32,10 @@ class Main(QWidget):
         self.comboBoxFrom = QComboBox() #Drop List | Convert From
         self.measureArr = ['km','m','dm','mm']
         self.comboBoxFrom.addItems(self.measureArr)
-        #km 1000 m 10 dm 10 mm
+
         lay0.addWidget(self.comboBoxFrom)
         
-        #,'mile','inch','yards'
+
         
         label1 = QLabel("Convert To: ")
         lay0.addWidget(label1)
@@ -39,7 +48,7 @@ class Main(QWidget):
         button.clicked.connect(self.convert)
         lay0.addWidget(button)
         
-        self.label2 = QLabel("Wynik: ")
+        self.label2 = QLabel("Answer: ")
         lay0.addWidget(self.label2)
         
         
@@ -79,7 +88,7 @@ class Main(QWidget):
         mess.exec()
         
         
-app = QApplication(sys.argv)
+
 window = Main()
 window.show()
 app.exec()
