@@ -29,13 +29,28 @@ class Val(QWidget):
                 return -1
          
         number = [_ for _ in number if _!=' ']   #Delete Space
-        a = []
+        EverySecNum = []
         i = 1
-        for _ in number: #Takes every secound num from number
+        for _ in number[::-1]: #Takes every secound num from number
             if i%2==0:
-                a.append(_)
+                EverySecNum.append(_)
             i+=1
-        number = a
+        EverySecNum = ''.join([str(int(_)*2) for _ in EverySecNum])
+        EverySecNum = [_ for _ in EverySecNum]
+        print(number)
+        print(EverySecNum)
+        EverySecNumSum = sum([int(_) for _ in EverySecNum])
+        print(EverySecNumSum)
+        
+        EverySecNumOdd = []
+        i = 1
+        for _ in number[::-1]: #Takes every secound num from number
+            if i%2==0 and int(_)%2!=0:
+                EverySecNumOdd.append(_)
+            i+=1
+        print(EverySecNumOdd)
+        EverySecNumOddSum = sum([int(_) for _ in EverySecNumOdd])
+        print(EverySecNumOddSum + EverySecNumSum)
             
             
 
