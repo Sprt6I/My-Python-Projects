@@ -63,7 +63,7 @@ class Main(QWidget):
         ToIndx = self.measureArr.index(self.comboBoxTo.currentText())
         
         if FromIndx==ToIndx:
-            self.label2.setText(f'Wynik: {self.Input.text()}{self.comboBoxTo.currentText()}')
+            self.label2.setText(f'Ans: {self.Input.text()}{self.comboBoxTo.currentText()}')
             return
         
         #suma = int(self.Input.text())
@@ -71,13 +71,13 @@ class Main(QWidget):
         if FromIndx<ToIndx:
             for _ in range(1, (ToIndx-FromIndx)+1):
                 suma*=arr[_-1]
-            self.label2.setText(f'Wynik: {suma}{self.comboBoxTo.currentText()}')
+            self.label2.setText(f'Ans: {suma}{self.comboBoxTo.currentText()}')
             return
 
 
         for _ in range(1, (FromIndx-ToIndx)+1):
             suma/=arr[_-1]
-        self.label2.setText(f'Wynik: {suma}{self.comboBoxTo.currentText()}')
+        self.label2.setText(f'Ans: {suma}{self.comboBoxTo.currentText()}')
         
         
         

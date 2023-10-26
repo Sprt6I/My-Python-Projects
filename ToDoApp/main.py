@@ -19,20 +19,30 @@ class App(QWidget):
         self.layout.addWidget(AddTaskNameInput,0,0)
         
         AddTaskBut = QPushButton('AddTask')
-        AddTaskBut.clicked.connect(lambda: self.addTask123(AddTaskNameInput.text()))
+        AddTaskBut.clicked.connect(lambda: self.addTask(AddTaskNameInput.text()))
         self.layout.addWidget(AddTaskBut,0,1)
+        
+        self.text = 2
         
         self.setLayout(self.layout)
         
-    def addTask123(self,nameOfTask):
+    def addTask(self,nameOfTask):
+        self.TaskLayout = QHBoxLayout()
         DoneBut = QPushButton('Done !')
         mainBut = QPushButton(nameOfTask)
-        self.layout.addWidget(DoneBut,self.row,0)
-        self.layout.addWidget(mainBut,self.row,1)
+        DoneBut.clicked.connect(lambda: self.DeleteTask(DoneBut, mainBut))
+        
+        self.layout.addWidget(DoneBut, self.row, 1)
+        self.layout.addWidget(mainBut,self.row, 0)
         
         self.row+=1
+        self.adjustSize()
         
-    
+    def DeleteTask(self,DoneBut,mainBut):
+        DoneBut.deleteLater()
+        mainBut.deleteLater()
+        
+        self.adjustSize()
         
 window = App()
 window.show()
