@@ -4,6 +4,10 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 import sys
 
+
+#Function always have '_' at the end
+
+
 app = QApplication(sys.argv)
 
 app.setStyleSheet (
@@ -11,49 +15,41 @@ app.setStyleSheet (
     'QPushButton {border: 1px solid white; color:white; background-color:black;}'
 )
 
-class App(QWidget):
-    def __init__(self):
+class MainAppWindow(QWidget):
+    def __init__(self): #Sets Up All Variables And 'Configurate' Layout
         super().__init__()
         
         self.setWindowTitle('To Do')
         self.setStyleSheet('background-color:black;color:white;font-size: 16pt;')
         self.layout = QGridLayout()
         
-        self.row = 1 #Number Of Row To Add Task
-        self.tasksNames = [] #Names Of Task Added
-        self.taskWin = None
-        self.TaskWindowsArr = []
-        font = QFont()
-        
-        
-        font.setPointSize(20)
-        
-        self.setFont(font)
-        
-        self.layout.setContentsMargins(0, 0, 0, 0)
-        
+        self.layout.setContentsMargins(0, 0, 0, 0) #Sets margin to 0 and strech button to task name in 1/4
         self.layout.setColumnStretch(0, 4)
         self.layout.setColumnStretch(1, 1)
         
+        self.row = 1 #Number Of Row To Add Task
+        self.tasksNames = [] #Names Of Task Added
+        self.taskWin = None
+        self.TaskWindowsArr = []  
         
+        self.AddUI_()
         
-        AddTaskNameInput = QLineEdit()
-        AddTaskNameInput.setFont(font)
+    def AddUI_(self): #Adds UI For App
+        
+        AddTaskNameInput = QLineEdit() #Input For Task Name
         AddTaskNameInput.setFixedHeight(50)
         AddTaskNameInput.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.layout.addWidget(AddTaskNameInput,0,0)
         
-        AddTaskBut = QPushButton('AddTask')
+        AddTaskBut = QPushButton('AddTask') #Button To Add Tasks
         AddTaskBut.setFixedHeight(50)
         AddTaskBut.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        AddTaskBut.clicked.connect(lambda: self.addTask(AddTaskNameInput.text()))
+        AddTaskBut.clicked.connect(lambda: self.addTask_(AddTaskNameInput.text()))
         self.layout.addWidget(AddTaskBut,0,1)
-        
-        self.text = 2
         
         self.setLayout(self.layout)
         
-    def addTask(self,nameOfTask: str) -> int:
+    def addTask_(self,nameOfTask: str) -> int:
         """Adds Task
 
         Args:
@@ -66,13 +62,13 @@ class App(QWidget):
         if len(nameOfTask)>50: return -1 #Tasks name can't be longer than 50 char
         if nameOfTask in self.tasksNames: return -1 #No Task With Same Name
         
-        DoneBut = QPushButton('Done !')
+        DoneBut = QPushButton('Done !') #Button For Deleting Task
         DoneBut.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        DoneBut.clicked.connect(lambda: self.DeleteTask(DoneBut, mainBut, nameOfTask))
+        DoneBut.clicked.connect(lambda: self.DeleteTask_(DoneBut, mainBut, nameOfTask))
         
         taskWin = TaskWindow(nameOfTask)  #Create window for task
             
-        mainBut = QPushButton(nameOfTask)
+        mainBut = QPushButton(nameOfTask) #Button With Task Name (When clicked shows window with space to add description)
         mainBut.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         mainBut.clicked.connect(lambda: taskWin.show())
         
@@ -82,10 +78,9 @@ class App(QWidget):
         self.row+=1
         self.tasksNames.append(nameOfTask) #Adds Task Name To List
         
-        #self.adjustSize() #Resizes Window
         return 0
         
-    def DeleteTask(self,DoneBut,taskButton, nameOfTask:str):
+    def DeleteTask_(self,DoneBut,taskButton, nameOfTask:str):
         """Deletes task
 
         Args:
@@ -97,10 +92,8 @@ class App(QWidget):
         
         self.tasksNames.remove(nameOfTask) #Removes Task Name To List
         
-        #self.adjustSize() #Resizes Window
         
-        
-class TaskWindow(QWidget):
+class TaskWindow(QWidget): #Window Containig Space For Task Description Showing When Task Button Clicked
     def __init__(self, taskName: str):
         super().__init__()
         self.setWindowTitle(taskName)
@@ -108,13 +101,13 @@ class TaskWindow(QWidget):
         
         layout = QVBoxLayout()
         
-        textHolder = QTextEdit()
-        textHolder.setStyleSheet('border: 1px solid white')
-        layout.addWidget(textHolder)
+        DescriptionForTask = QTextEdit()
+        DescriptionForTask.setStyleSheet('border: 1px solid white')
+        layout.addWidget(DescriptionForTask)
         
         self.setLayout(layout)
         
         
-window = App()
-window.show()
+TaskApp = MainAppWindow()
+TaskApp.show()
 app.exec()
