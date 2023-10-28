@@ -1,21 +1,11 @@
-from PySide6.QtWidgets import *
-import PySide6.QtCore as QtCore
-from PySide6.QtCore import *
-from PySide6.QtGui import *
+from PySide6.QtWidgets import QSizePolicy, QGridLayout, QWidget, QApplication, QLineEdit, QPushButton, QVBoxLayout, QTextEdit
 import sys
 
 
-#Function always have '_' at the end
-
-
-app = QApplication(sys.argv)
-
-app.setStyleSheet (
-    'QLineEdit {border: 1px solid white; color:white; background-color:black}'
-    'QPushButton {border: 1px solid white; color:white; background-color:black;}'
-)
-
 class MainAppWindow(QWidget):
+    
+    __slots__ = ["layout", "row", "tasksNames", 'taskWin']
+    
     def __init__(self): #Sets Up All Variables And 'Configurate' Layout
         super().__init__()
         
@@ -29,8 +19,6 @@ class MainAppWindow(QWidget):
         
         self.row = 1 #Number Of Row To Add Task
         self.tasksNames = [] #Names Of Task Added
-        self.taskWin = None
-        self.TaskWindowsArr = []  
         
         self.AddUI_()
         
@@ -58,7 +46,7 @@ class MainAppWindow(QWidget):
         Returns:
             int: 0 if everyhing is correct else -1
         """
-        if  nameOfTask=='' or not nameOfTask: return -1 #Task must have name
+        if not nameOfTask: return -1 #Task must have name
         if len(nameOfTask)>50: return -1 #Tasks name can't be longer than 50 char
         if nameOfTask in self.tasksNames: return -1 #No Task With Same Name
         
@@ -93,21 +81,35 @@ class MainAppWindow(QWidget):
         self.tasksNames.remove(nameOfTask) #Removes Task Name To List
         
         
-class TaskWindow(QWidget): #Window Containig Space For Task Description Showing When Task Button Clicked
+class TaskWindow(QWidget): #Window Containig Space For Task Description Showing When Task Button Clickedv
+    
+    __slots__ = ["layout"]
+    
     def __init__(self, taskName: str):
         super().__init__()
         self.setWindowTitle(taskName)
         self.setStyleSheet('background-color:black; color:white')
         
-        layout = QVBoxLayout()
+        self.layout = QVBoxLayout()
         
+        self.setUI_()
+        
+    def setUI_(self):
         DescriptionForTask = QTextEdit()
         DescriptionForTask.setStyleSheet('border: 1px solid white')
-        layout.addWidget(DescriptionForTask)
+        self.layout.addWidget(DescriptionForTask)
         
-        self.setLayout(layout)
+        self.setLayout(self.layout)
+   
         
+if __name__ == "__main__":   
+    app = QApplication(sys.argv)
+
+    app.setStyleSheet (
+        'QLineEdit {border: 1px solid white; color:white; background-color:black}'
+        'QPushButton {border: 1px solid white; color:white; background-color:black;}'
+    ) 
         
-TaskApp = MainAppWindow()
-TaskApp.show()
-app.exec()
+    TaskApp = MainAppWindow()
+    TaskApp.show()
+    app.exec()
