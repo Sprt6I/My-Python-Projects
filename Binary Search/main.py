@@ -27,12 +27,3 @@ def Binary(arr: list[int], num: int)-> list[int]:
 
 for _ in tests:
     print(Binary(**_['input']) == _['output'])
-
-    
-#print(Binary(**tests['input']))
-#result = Binary(tests['input']['arr'], tests['input']['num'])
-#print(result==tests['output'])
-
-#arrToSearch = Sorting.Bsort(arrToSearch) #Sorts Array Using Bouble Sorting Algoritm
-
-#Binary(arrToSearch, num)
