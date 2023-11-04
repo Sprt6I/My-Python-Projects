@@ -19,6 +19,8 @@ def send_(mess: str):
     print(mess)
     client.send(sendLen)
     client.send(mess.encode(FORMAT))
+    if mess=='quit':
+        exit()
     
 def listen_():
     mess = client.recv(1024).decode(FORMAT)
@@ -29,11 +31,12 @@ send_(f'Name:{name}')
 print(name)
     
 while 1:
+    ToWhoSend = input('Input name: ')
     mess = input("Input message: ")
-    send_(mess)
+    send_(f'{ToWhoSend}/{mess}')
     
-    ServerMess = threading.Thread(target=listen_)
-    ServerMess.start()
+    GetMess = threading.Thread(target=listen_)
+    GetMess.start()
     
     print(mess)
     if mess=='quit':

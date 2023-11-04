@@ -29,7 +29,16 @@ def handleClient_(conn, address):
         elif 'Name:' in mess:
             mess = mess.split(':')
             clientNames.append(mess[1])
-            print(clientNames)
+            print(f'List Of Users: {clientNames}')
+        else:
+            print('\n Sending mess to someone')
+            mess = mess.split('/')
+            print(f'message: {mess}')
+            print(f'List Of Users: {clientNames}')
+            for name in clientNames:
+                if name==mess[0]:
+                    print(f'Sending: {mess[1]}, To {name}')
+                    conn.send(mess[1].encode(FORMAT))
 
 def start_():
     server.listen()
