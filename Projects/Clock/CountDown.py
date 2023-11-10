@@ -5,53 +5,83 @@ import time
 import functools
 import threading
 
+app = QApplication()
+app.setStyleSheet(
+    "QTabWidget {background-color: transparent;}"
+    'QTabWidget::pane {border: 1px solid white;}'  # Set the border color of QTabWidget
+    'QTabBar::tab {background-color: black;color:white; border: 1px solid white; padding: 8px;}'  # Set text color and background color for tabs
+    'QPushButton {color:white; background-color: transparent; border: 1px solid white;}'
+    'QLabel {color:white; background-color:transparent}'
+    'QLineEdit {color:white; background-color:transparent; border: 1px solid white;}'
+    #"QHeaderView::section {background-color: transparent;}"
+    #"QHeaderView {background-color: transparent;}"
+    #"QTableCornerButton::section {background-color: transparent;}"
+)
+
 class CountDownWindow(QWidget):
     
-    timer_updated = QtCore.Signal(str)
+    #timer_updated = QtCore.Signal(str)
     
     def __init__(self):
         super().__init__()
         self.setWindowTitle('Stoper')
         self.setGeometry(200, 200, 350, 200)
+        self.setWindowFlags(Qt.FramelessWindowHint)
+        self.setAttribute(Qt.WA_TranslucentBackground)
+        
         self.arr = [0,0,0,0,0,0]
         self.indx = 5
         
         self.MainUI_()
         
         
+        
     def MainUI_(self):
         TabWidget = QTabWidget(self)
         
+        
         self.SelectTime = QWidget()
-        Counter = QWidget()
+        self.Counter = QWidget()
+
+        self.CounterUI_() #Creates Counter Tab UI
         
-        CounterLayout = QVBoxLayout()
-        
-        self.timerLabel = QLabel('00h 00m 00s')
-        self.timer_updated.connect(self.SetTimeForStopper_) # connect signal to slot
-        CounterLayout.addWidget(self.timerLabel)
-        startTimerButton = QPushButton('Start Timer')
-        startTimerButton.clicked.connect(lambda: self.TempFunc_())
-        CounterLayout.addWidget(startTimerButton)
-        
-        Counter.setLayout(CounterLayout)
-        
-        self. SelectTimeUI_() #Creates Select Time Tab UI
+        self.SelectTimeUI_() #Creates Set Counter Tab UI
         
         TabWidget.addTab(self.SelectTime,"Set Counter")
-        TabWidget.addTab(Counter,"Counter")
+        TabWidget.addTab(self.Counter,"Counter")
         
-    def TempFunc_(self):
-        t1 = threading.Thread(target=self.StartTimer_)
-        t1.start()
-        QTimer.singleShot(0, t1.join) # join thread after starting
+        
+        
+    def ClockFunc_(self): #Update QLabel (text) In Stopper
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.StartTimer_)
+        self.timer.start(1000)
             
+            
+            
+    def CounterUI_(self): # Sets UI For 'Counter' Tab In App
+        CounterLayout = QVBoxLayout()
         
-    def SelectTimeUI_(self):
+        
+        self.timerLabel = QLabel('00h 00m 00s')
+        CounterLayout.addWidget(self.timerLabel)
+        
+        startTimerButton = QPushButton('Start Timer')
+        startTimerButton.clicked.connect(lambda: self.ClockFunc_())
+        CounterLayout.addWidget(startTimerButton)
+        
+        self.Counter.setLayout(CounterLayout)
+        
+        
+        
+    def SelectTimeUI_(self): # Sets UI For 'Set Counter' Tab In App
         SelectTimeLayout = QGridLayout()
         
         self.TimeEdit = QLineEdit(f'00h 00m 00s')
         SelectTimeLayout.addWidget(self.TimeEdit, 0, 0)
+        
+        sumbmitButton = QPushButton('Sumbmit')
+        SelectTimeLayout.addWidget(sumbmitButton, 0, 1)
         
         self.butRow = 0
         self.down = 1
@@ -71,15 +101,13 @@ class CountDownWindow(QWidget):
             if self.butRow==3:
                 self.butRow=0
                 self.down+=1
-        sumbmitButton = QPushButton('Sumbmit')
-        sumbmitButton.clicked.connect(self.SetTimeForStopper_())
-        
-        SelectTimeLayout.addWidget(sumbmitButton)
         
         self.SelectTime.setLayout(SelectTimeLayout)
         
         
+        
     def UpDateTime_(self, num):
+        """ FUNCTION FOR "Set Counter" TAB """
         if num=='Back':
             self.arr[self.backIndx] = 0
             self.TimeEdit.setText(f'{self.arr[5]}{self.arr[4]}h {self.arr[3]}{self.arr[2]}m {self.arr[1]}{self.arr[0]}s')
@@ -101,11 +129,9 @@ class CountDownWindow(QWidget):
         self.TimeEdit.setText(f'{self.arr[5]}{self.arr[4]}h {self.arr[3]}{self.arr[2]}m {self.arr[1]}{self.arr[0]}s')
         self.indx+=1
         
-    def SetTimeForStopper_(self):
-        text = f'{self.arr[5]}{self.arr[4]}h {self.arr[3]}{self.arr[2]}m {self.arr[1]}{self.arr[0]}s'
-        self.timer_updated.emit(text)
         
-    def SetSecounds_(self, sec: int):
+        
+    def SetSecounds_(self, sec: int): #Calculate Secounds
         secounds = str(sec-1)
         if len(secounds)==2:
             self.arr[1] = int(secounds[0])
@@ -114,10 +140,11 @@ class CountDownWindow(QWidget):
             self.arr[1] = 0
             self.arr[0] = int(secounds[0])
             
-        self.timerLabel.setText(f'1')
-        self.SetTimeForStopper_()
+        self.timerLabel.setText(f'{self.arr[5]}{self.arr[4]}h {self.arr[3]}{self.arr[2]}m {self.arr[1]}{self.arr[0]}s')
         
-    def SetMinutes_(self, min: int):
+        
+        
+    def SetMinutes_(self, min: int): #Calculate Minutes
         minutes = str(min-1)
         if len(minutes)==2:
             self.arr[3] = int(minutes[0])
@@ -128,7 +155,9 @@ class CountDownWindow(QWidget):
         
         self.SetSecounds_(60)
         
-    def SetHours_(self, hour:int):
+        
+        
+    def SetHours_(self, hour:int): #Calculate Hours
         hours = str(hour-1)
         if len(hours)==2:
             self.arr[5] = int(hours[0])
@@ -139,31 +168,34 @@ class CountDownWindow(QWidget):
         
         self.SetMinutes_(59)
         
-    def StartTimer_(self):
-        print('start')
         
-        while 1:
-            hours = int(f'{self.arr[5]}{self.arr[4]}')
-            minutes = int(f'{self.arr[3]}{self.arr[2]}')
-            seconds = int(f'{self.arr[1]}{self.arr[0]}')
-            
-            print(f'Before: {hours, minutes, seconds}')
-            
-            if seconds > 0:
-                self.SetSecounds_(seconds)
+        
+    def StartTimer_(self):
+        """ FUNCTION FOR "Counter" TAB (RUNS STOPER)"""
+        hours = int(f'{self.arr[5]}{self.arr[4]}')
+        minutes = int(f'{self.arr[3]}{self.arr[2]}')
+        seconds = int(f'{self.arr[1]}{self.arr[0]}')
+        
+        print(f'Before: {hours, minutes, seconds}')
+        
+        if seconds > 0:
+            self.SetSecounds_(seconds)
+        else:
+            if minutes > 0:
+                self.SetMinutes_(minutes)
             else:
-                if minutes > 0:
-                    self.SetMinutes_(minutes)
-                else:
-                    if hours > 0:
-                        self.SetHours_(hours)
-                
-            print(f'After: {hours, minutes, seconds}')
-            self.timer_updated.emit(self.timerLabel.text()) # emit signal to update label
-            time.sleep(1)
+                if hours > 0:
+                    self.SetHours_(hours)
+            
+        print(f'After: {hours, minutes, seconds}')
+        
+        if hours+minutes+seconds<=0:
+            print("END")
+            exit()
+        
+        
         
 if __name__ == "__main__":
-    app = QApplication()
     CounterAppWindow = CountDownWindow()
     CounterAppWindow.show()
     app.exec()
