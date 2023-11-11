@@ -1,26 +1,19 @@
 from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget, QApplication, QTabWidget, QLineEdit, QPushButton, QGridLayout
 from PySide6.QtCore import Qt, QTimer
-from PySide6 import QtCore
-import time
+from PySide6.QtGui import QRegion
 import functools
-import threading
 
 app = QApplication()
 app.setStyleSheet(
     "QTabWidget {background-color: transparent;}"
     'QTabWidget::pane {border: 1px solid white;}'  # Set the border color of QTabWidget
     'QTabBar::tab {background-color: black;color:white; border: 1px solid white; padding: 8px;}'  # Set text color and background color for tabs
-    'QPushButton {color:white; background-color: transparent; border: 1px solid white;}'
+    'QPushButton {color:white; background-color: rgba(255, 255, 255, 10%); border: 1px solid white;}'
     'QLabel {color:white; background-color:transparent}'
     'QLineEdit {color:white; background-color:transparent; border: 1px solid white;}'
-    #"QHeaderView::section {background-color: transparent;}"
-    #"QHeaderView {background-color: transparent;}"
-    #"QTableCornerButton::section {background-color: transparent;}"
 )
 
 class CountDownWindow(QWidget):
-    
-    #timer_updated = QtCore.Signal(str)
     
     def __init__(self):
         super().__init__()
@@ -67,6 +60,7 @@ class CountDownWindow(QWidget):
         CounterLayout.addWidget(self.timerLabel)
         
         startTimerButton = QPushButton('Start Timer')
+        startTimerButton.setMask(QRegion(0, 0, startTimerButton.width(), startTimerButton.height(), QRegion.Rectangle))
         startTimerButton.clicked.connect(lambda: self.ClockFunc_())
         CounterLayout.addWidget(startTimerButton)
         
@@ -93,9 +87,9 @@ class CountDownWindow(QWidget):
             globals()[f'but{i}'] = QPushButton(str(i))
             eval(f'but{i}').clicked.connect(functools.partial(self.UpDateTime_, i))
             SelectTimeLayout.addWidget(eval(f'but{i}'), self.down, self.butRow)
-            print(i)
-            print(f'but{i}')
-            print(eval(f'but{i}'))
+            #print(i)
+            #print(f'but{i}')
+            #print(eval(f'but{i}'))
             
             self.butRow+=1
             if self.butRow==3:
@@ -106,7 +100,7 @@ class CountDownWindow(QWidget):
         
         
         
-    def UpDateTime_(self, num):
+    def UpDateTime_(self, num): #Sets Time
         """ FUNCTION FOR "Set Counter" TAB """
         if num=='Back':
             self.arr[self.backIndx] = 0
@@ -124,7 +118,7 @@ class CountDownWindow(QWidget):
             self.arr = self.arr[:-1]
             self.arr.insert(0,int(num))
         
-        print(self.arr)
+        #print(self.arr)
         
         self.TimeEdit.setText(f'{self.arr[5]}{self.arr[4]}h {self.arr[3]}{self.arr[2]}m {self.arr[1]}{self.arr[0]}s')
         self.indx+=1
@@ -175,8 +169,14 @@ class CountDownWindow(QWidget):
         hours = int(f'{self.arr[5]}{self.arr[4]}')
         minutes = int(f'{self.arr[3]}{self.arr[2]}')
         seconds = int(f'{self.arr[1]}{self.arr[0]}')
+        if hours>60:
+            hours = 60
+        if minutes>60:
+            minutes = 60
+        if seconds>60:
+            seconds = 60
         
-        print(f'Before: {hours, minutes, seconds}')
+        #print(f'Before: {hours, minutes, seconds}')
         
         if seconds > 0:
             self.SetSecounds_(seconds)
@@ -187,7 +187,7 @@ class CountDownWindow(QWidget):
                 if hours > 0:
                     self.SetHours_(hours)
             
-        print(f'After: {hours, minutes, seconds}')
+        #print(f'After: {hours, minutes, seconds}')
         
         if hours+minutes+seconds<=0:
             print("END")
