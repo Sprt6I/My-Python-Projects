@@ -27,7 +27,13 @@ def handleClient_(conn, address):
             for name, addr in clients.items():
                 if name==mess[2]:
                     sendtime = time.localtime()
-                    addr.send(f'[{sendtime.tm_hour}:{sendtime.tm_min}:{sendtime.tm_sec}] {mess[0]}: {mess[3]}'.encode(FORMAT))
+                    hours = sendtime.tm_hour
+                    minutes = sendtime.tm_min
+                    secounds = sendtime.tm_sec
+                    if len(str(hours))<2: hours = f'0{hours}'
+                    if len(str(minutes))<2: minutes = f'0{minutes}'
+                    if len(str(secounds))<2: secounds = f'0{secounds}'
+                    addr.send(f'[{hours}:{minutes}:{secounds}] {mess[0]}: {mess[3]}'.encode(FORMAT))
             
             continue
         

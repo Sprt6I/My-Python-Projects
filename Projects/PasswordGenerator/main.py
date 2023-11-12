@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QSizePolicy, QGridLayout, QWidget, QApplication, QLineEdit, QPushButton, QVBoxLayout, QTextEdit, QCheckBox, QLabel
 import sys
 import random
-sys.path.append('C:/Users/User/Documents/GitHub/Python')
+#sys.path.append('C:/Users/User/Documents/GitHub/Python')
 from HelpClasses import Lists
 
 class MainWindowApp(QWidget):

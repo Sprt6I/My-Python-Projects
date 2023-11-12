@@ -3,14 +3,20 @@ import threading
 import sys
 from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget, QApplication, QLineEdit, QTextEdit, QPushButton
 from PySide6.QtCore import QObject, Signal, Slot
-#from PySide6.QtCore import Qt, QTimer
-#from PySide6 import QtCore
-#import time
 
 SERVER_ADDRESS = '192.168.0.31'
 SERVER_PORT = 9090
 FORMAT = 'utf-8'
 SIZE = 1024
+
+app = QApplication(sys.argv)
+app.setStyleSheet(
+    'QWidget{background-color:black; color:white;}'
+    'QPushButton {background-color: black;color:white;border:1px solid white;}'
+    'QLineEdit {background-color:black; color:white; border 1px solid white}'
+    'QTextEdit {background-color:black; color:white; border:1px solid white}'
+)
+
 
 print('\n\nSend Message To Server: message')
 print('Send Message To User: To:Name:message\n\n')
@@ -47,6 +53,7 @@ class clientApp(QWidget):
         sumbmitButton = QPushButton('Sumbmit')
         sumbmitButton.clicked.connect(self.Send_)
         self.incomingMessageBox = QTextEdit()
+        self.incomingMessageBox.setReadOnly(True)
         
         mainLayout.addWidget(toText)
         mainLayout.addWidget(self.messageBox)
@@ -67,11 +74,12 @@ class clientApp(QWidget):
         
     @Slot(str)
     def update_message(self, message):
+        self.incomingMessageBox.setReadOnly(False)
         text = self.incomingMessageBox.toPlainText() + f'\n{message}'
         self.incomingMessageBox.setText(text)
+        self.incomingMessageBox.setReadOnly(True)
         
 if __name__=='__main__':
-    app = QApplication(sys.argv)
     appWindow = clientApp()
     appWindow.show()
     app.exec()
