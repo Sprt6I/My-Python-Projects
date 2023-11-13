@@ -1,6 +1,7 @@
 import socket
 import threading
 import time
+from icecream import ic
 
 SERVER_ADDRESS = '192.168.0.31'
 SERVER_PORT = 9090
@@ -16,13 +17,13 @@ def handleClient_(conn, address):
     while 1:
         mess = conn.recv(SIZE).decode(FORMAT)
         print(mess)
-        if 'Name:' in mess:
-            mess = mess.split(':')
+        if 'Name|' in mess:
+            mess = mess.split('|')
             clients[mess[1]] = conn
             continue
         
-        if 'To:' in mess:
-            mess = mess.split(':')
+        if 'To|' in mess:
+            mess = mess.split('|')
             
             for name, addr in clients.items():
                 if name==mess[2]:
@@ -33,11 +34,12 @@ def handleClient_(conn, address):
                     if len(str(hours))<2: hours = f'0{hours}'
                     if len(str(minutes))<2: minutes = f'0{minutes}'
                     if len(str(secounds))<2: secounds = f'0{secounds}'
-                    addr.send(f'[{hours}:{minutes}:{secounds}] {mess[0]}: {mess[3]}'.encode(FORMAT))
+                    ic(mess)
+                    addr.send(f'[{hours}:{minutes}:{secounds}] {mess[0]}| {mess[3]}|{mess[4]}|{mess[5]}'.encode(FORMAT))
             
             continue
         
-        print(f'[MESSAGE] {address}: {mess}')
+        print(f'[MESSAGE] {address}| {mess}')
 
 server.listen()
 
