@@ -1,4 +1,3 @@
-from ast import List
 import socket
 import threading
 import sys
@@ -105,6 +104,7 @@ class clientApp(QWidget):
             AddToMess = mess[3]
             
             ic(mess)
+            ic(AddToMess)
             
             ic(KeyToMess)
             decoder = self.DecodeMess(Message, KeyToMess, AddToMess) 
@@ -128,7 +128,8 @@ class clientApp(QWidget):
         print('\n ENCODING MESS \n')
         KeyArray = [] #Array With Key
         EncodedMess = ''
-        add = randrange(300, 1200)
+        adds = []
+        
         
         for let in mess:
             start = randrange(0, 5)
@@ -138,14 +139,29 @@ class clientApp(QWidget):
                 startNum+=str(randrange(0,9))
             ic(startNum)
             
+            add = randrange(300, 1200)
+            adds.append(str(add))
+            
             EncodedMess+=f'{startNum}{ord(let)+add}{randrange(0,9)}/' if let!=' ' else f'{startNum}{ord(" ")+add}{randrange(0,9)}/'
             
             
         ic(EncodedMess)
         ic(KeyArray)
-        return [''.join(EncodedMess[:-1]), [KeyArray, add]] #Return Array[0] = Message, Array[1] = Key
+        
+        '''
+        for word in EncodedMess.split('/'):
+            for indx, let in enumerate(word):
+                ic(f'{let}{word[indx+1]}')
+                ic(int(f'{let}{word[indx+1]}'))
+                ic(x:=chr(int(f'{let}{word[indx+1]}')))
+                ic(ord(x))
+        ''' 
+            
+        #ic(EncodedMess)
+        
+        return [''.join(EncodedMess[:-1]), [KeyArray, adds]] #Return Array[0] = Message, Array[1] = Key
     
-    def DecodeMess(self, EncodedMess, key, add):
+    def DecodeMess(self, EncodedMess, key, adds):
         print('\n DECODING MESS \n')
         EncodedMess = EncodedMess[1:] #Everytime 0 elemet of mess is ' ' because  f'[MESSAGE] {address}: {mess}' (space between ':' and mess)
         EncodedMess = EncodedMess.split('/')
@@ -156,16 +172,27 @@ class clientApp(QWidget):
         start = [int(i) for i in start[1:-1] if i not in ' ,'] #Key is string so we convert it to array
         ic(start)
         
+        add = []
+        s = ''
+        for let in adds[1:-1]:
+            if let not in ", '" and let!='':
+                s+=let
+            else:
+                if s:
+                    add.append(int(s))
+                s = ''
+                
+        ic(add)
+                
+        
         DecodedMessage = ''
         
-        minus = int(add)
-        ic(minus)
         
         for indx, num in enumerate(EncodedMess):
             ic(num[start[indx]:-1])
             
             letter = int(num[start[indx]:-1])
-            letter -=minus
+            letter -=add[indx]
             ic(letter)
             DecodedMessage += chr(letter)
         ic(DecodedMessage)
