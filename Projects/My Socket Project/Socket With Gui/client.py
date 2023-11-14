@@ -34,6 +34,7 @@ class clientApp(QWidget):
         super().__init__()
         self.setWindowTitle('QMess')
         
+        #Connects With Server
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client.connect((SERVER_ADDRESS, SERVER_PORT))
         
@@ -67,13 +68,15 @@ class clientApp(QWidget):
         
     def Send_(self):
         print('\n\n SEND MESS \n\n')
-        text = self.messageBox.text()
+        text = self.messageBox.text() #Gets Message
         
-        text = text.split('|')
-        
+        text = text.split('|') #Splits it using '|'
         ic(text)
         
-        encoder = self.EncodeMess(text[2])
+        MessageToSend = text[2]
+        
+        
+        encoder = self.EncodeMess(MessageToSend)
         ic(encoder)
         
         text[2] = ''.join(encoder[0])
@@ -89,18 +92,25 @@ class clientApp(QWidget):
         self.client.send(f'{self.name}|{text}|{start}|{add}'.encode(FORMAT))
 
     def GetMess_(self):
-        print('\n\n GET MESS \n\n')
         while 1:
             mess = self.client.recv(SIZE).decode(FORMAT)
             
+            if mess:
+                print('\n\n GET MESS \n\n')
+            
             mess = mess.split('|')
+            FromMessage = mess[0]
+            Message = mess[1]
+            KeyToMess = mess[2]
+            AddToMess = mess[3]
+            
             ic(mess)
             
-            ic(mess[2])
-            decoder = self.DecodeMess(mess[1], [mess[2], mess[3]]) 
+            ic(KeyToMess)
+            decoder = self.DecodeMess(Message, KeyToMess, AddToMess) 
             ic(decoder)
             
-            mess = '|'.join(mess[:-2])+": "+ f'{decoder}'
+            mess = '|'.join(mess[:-3])+": "+ f'{decoder}'
             
             ic(mess)
             
@@ -108,48 +118,59 @@ class clientApp(QWidget):
             signaller.message_signal.emit(mess)
         
     @Slot(str)
-    def update_message(self, message):
+    def update_message(self, message): #Add Messages We Get On The Screen
         self.incomingMessageBox.setReadOnly(False)
         text = self.incomingMessageBox.toPlainText() + f'\n{message}'
         self.incomingMessageBox.setText(text)
         self.incomingMessageBox.setReadOnly(True)
         
     def EncodeMess(self, mess:str):
-        KeyArray = []
+        print('\n ENCODING MESS \n')
+        KeyArray = [] #Array With Key
         EncodedMess = ''
         add = randrange(300, 1200)
         
         for let in mess:
             start = randrange(0, 5)
-            KeyArray.append(start)
             startNum = ''
-            
-            for i in range(start):
+            KeyArray.append(start)
+            for i in range(start): #Every Number Has Random Numers At Start (start = randrange(0,5)) In Range 0-9
                 startNum+=str(randrange(0,9))
             ic(startNum)
             
-                           
-            EncodedMess+=f'{startNum}{ord(let)+add}{randrange(0,9)}/' if let!=' ' else '!#!/'
+            EncodedMess+=f'{startNum}{ord(let)+add}{randrange(0,9)}/' if let!=' ' else f'{startNum}{ord(" ")+add}{randrange(0,9)}/'
+            
+            
         ic(EncodedMess)
         ic(KeyArray)
-        return [''.join(EncodedMess[:-1]), [KeyArray, add]]
+        return [''.join(EncodedMess[:-1]), [KeyArray, add]] #Return Array[0] = Message, Array[1] = Key
     
-    def DecodeMess(self, EncodedMess, key):
+    def DecodeMess(self, EncodedMess, key, add):
+        print('\n DECODING MESS \n')
         EncodedMess = EncodedMess[1:] #Everytime 0 elemet of mess is ' ' because  f'[MESSAGE] {address}: {mess}' (space between ':' and mess)
         EncodedMess = EncodedMess.split('/')
-        
         ic(EncodedMess)
-        minus = key[1]
-        key = key[0]
-        key = [int(i) for i in key[1:-1] if i not in ' ,']
         ic(key)
         
-        for indx, num in enumerate(EncodedMess):
-            ic(num[key[indx]:-1])
-            EncodedMess[indx] = chr(int(num[key[indx]:-1]))
-        ic(EncodedMess)
+        start = key
+        start = [int(i) for i in start[1:-1] if i not in ' ,'] #Key is string so we convert it to array
+        ic(start)
         
-        return ''.join(EncodedMess)
+        DecodedMessage = ''
+        
+        minus = int(add)
+        ic(minus)
+        
+        for indx, num in enumerate(EncodedMess):
+            ic(num[start[indx]:-1])
+            
+            letter = int(num[start[indx]:-1])
+            letter -=minus
+            ic(letter)
+            DecodedMessage += chr(letter)
+        ic(DecodedMessage)
+        
+        return ''.join(DecodedMessage)
         
 if __name__=='__main__':
     appWindow = clientApp()
