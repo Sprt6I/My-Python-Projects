@@ -6,7 +6,7 @@ from PySide6.QtCore import QObject, Signal, Slot
 from icecream import ic
 from random import randrange
 
-SERVER_ADDRESS = '192.168.0.31'
+SERVER_ADDRESS = '10.156.0.223'
 SERVER_PORT = 9090
 FORMAT = 'utf-8'
 SIZE = 1024
@@ -29,19 +29,21 @@ class Signaller(QObject):
 signaller = Signaller()
 
 class clientApp(QWidget):
-    def __init__(self):
+    def __init__(self, client, userName: str):
         super().__init__()
-        self.setWindowTitle('QMess')
+        self.client = client
+        self.userName = userName
+        self.setWindowTitle(f'QMess {self.userName}')
         
         #Connects With Server
-        self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.client.connect((SERVER_ADDRESS, SERVER_PORT))
+        #self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        #self.client.connect((SERVER_ADDRESS, SERVER_PORT))
         
         signaller.message_signal.connect(self.update_message)
         
         #Sets Name
-        self.name = input('Input Name: ')
-        self.client.send(f'Name|{self.name}'.encode(FORMAT))
+        #self.name = input('Input Name: ')
+        #self.client.send(f'Name|{self.name}'.encode(FORMAT))
         
         self.UI_()
         
@@ -68,6 +70,7 @@ class clientApp(QWidget):
     def Send_(self):
         print('\n\n SEND MESS \n\n')
         text = self.messageBox.text() #Gets Message
+        ic(self.userName)
         
         text = text.split('|') #Splits it using '|'
         ic(text)
@@ -88,7 +91,7 @@ class clientApp(QWidget):
         ic(key)
         
         
-        self.client.send(f'{self.name}|{text}|{start}|{add}'.encode(FORMAT))
+        self.client.send(f'{self.userName}|{text}|{start}|{add}'.encode(FORMAT))
 
     def GetMess_(self):
         while 1:
@@ -198,8 +201,9 @@ class clientApp(QWidget):
         ic(DecodedMessage)
         
         return ''.join(DecodedMessage)
-        
+'''   
 if __name__=='__main__':
     appWindow = clientApp()
     appWindow.show()
     app.exec()
+''' 

@@ -3,7 +3,7 @@ import threading
 import time
 from icecream import ic
 
-SERVER_ADDRESS = '192.168.0.31'
+SERVER_ADDRESS = '10.156.0.223'
 SERVER_PORT = 9090
 FORMAT = 'utf-8'
 SIZE = 1024
@@ -20,11 +20,24 @@ def handleClient_(conn, address):
         if 'Name|' in mess:
             mess = mess.split('|')
             clients[mess[1]] = conn
+            print(clients)
+            continue
+            
+        if 'Check|' in mess:
+            mess = mess.split('|')
+            mess = mess[1]
+            ic(mess)
+            ic(clients.keys())
+            if mess in clients.keys():
+                ic(True)
+                conn.send("True".encode(FORMAT))
+            else:
+                ic(False)
+                conn.send("".encode(FORMAT))
             continue
         
         if 'To|' in mess:
             mess = mess.split('|')
-            
             for name, addr in clients.items():
                 if name==mess[2]:
                     sendtime = time.localtime()

@@ -1,3 +1,3 @@
 @echo off
 start py server.py
-start py client.py
+start py logReg.py
