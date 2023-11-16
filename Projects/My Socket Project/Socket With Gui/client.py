@@ -6,10 +6,10 @@ from PySide6.QtCore import QObject, Signal, Slot
 from icecream import ic
 from random import randrange
 
-SERVER_ADDRESS = '10.156.0.223'
+SERVER_ADDRESS = '192.168.0.31'
 SERVER_PORT = 9090
 FORMAT = 'utf-8'
-SIZE = 1024
+SIZE = 2048
 
 app = QApplication(sys.argv)
 app.setStyleSheet(
@@ -33,6 +33,7 @@ class clientApp(QWidget):
         super().__init__()
         self.client = client
         self.userName = userName
+        ic(self.client)
         self.setWindowTitle(f'QMess {self.userName}')
         
         #Connects With Server
@@ -99,6 +100,7 @@ class clientApp(QWidget):
             
             if mess:
                 print('\n\n GET MESS \n\n')
+            ic(f'MESS::: {mess}')
             
             mess = mess.split('|')
             FromMessage = mess[0]

@@ -3,10 +3,10 @@ import threading
 import time
 from icecream import ic
 
-SERVER_ADDRESS = '10.156.0.223'
+SERVER_ADDRESS = '192.168.0.31'
 SERVER_PORT = 9090
 FORMAT = 'utf-8'
-SIZE = 1024
+SIZE = 2048
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind((SERVER_ADDRESS, SERVER_PORT))
@@ -48,7 +48,9 @@ def handleClient_(conn, address):
                     if len(str(minutes))<2: minutes = f'0{minutes}'
                     if len(str(secounds))<2: secounds = f'0{secounds}'
                     ic(mess)
-                    addr.send(f'[{hours}:{minutes}:{secounds}] {mess[0]}| {mess[3]}|{mess[4]}|{mess[5]}'.encode(FORMAT))
+                    toSend = f'[{hours}:{minutes}:{secounds}] {mess[0]}| {mess[3]}|{mess[4]}|{mess[5]}'
+                    print(f'SENDING {toSend} |||| TO: {addr}')
+                    addr.send(toSend.encode(FORMAT))
             
             continue
         

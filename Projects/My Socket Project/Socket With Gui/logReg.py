@@ -5,21 +5,31 @@ from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget, QApplication, QLineE
 from PySide6.QtCore import QObject, Signal, Slot
 from icecream import ic
 from client import clientApp
+from PySide6.QtCore import QMetaObject, Qt
 
-SERVER_ADDRESS = '10.156.0.223'
+SERVER_ADDRESS = '192.168.0.31'
 SERVER_PORT = 9090
 FORMAT = 'utf-8'
-SIZE = 1024
+SIZE = 2048
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect((SERVER_ADDRESS, SERVER_PORT))
 
+class Signaller(QObject):
+   createClientApp = Signal()
+
+signaller = Signaller()
 
 class RegisterLoginWindow(QWidget):
     def __init__(self):
         super().__init__()
-        self.login = False
+        self.userName = ""
         self.setWindowTitle("Register/Login")
+        
+        getCheckLogin = threading.Thread(target=self.GetMess_, args=())
+        getCheckLogin.start()
+        
+        signaller.createClientApp.connect(self.createClientApp)
         
         self.UI_()
         
@@ -63,20 +73,12 @@ class RegisterLoginWindow(QWidget):
         self.tabs.addTab(registerTab, "Main Tab")
         
     def Login_(self, name: str):
-        userName = name.split(':')[1]
-        userName = userName[1:]
-        ic(userName)
-        
-        client.send(f'Check|{userName}'.encode(FORMAT))
-        getCheckLogin = threading.Thread(target=self.GetMess_, args=())
-        getCheckLogin.start()
+        self.userName = name.split(':')[1]
+        self.userName = self.userName[1:]
+        ic(self.userName)
+        client.send(f'Check|{self.userName}'.encode(FORMAT))
         
         print(client)
-        
-        if self.login:
-            print('Login....')
-            window = clientApp(client,userName)
-            window.show() 
         
     def Register_(self, name: str):
         userName = name.split(':')[1]
@@ -87,12 +89,19 @@ class RegisterLoginWindow(QWidget):
         client.send(f'Name|{userName}'.encode(FORMAT))
         print(client)
         
+    @Slot()
+    def createClientApp(self):
+        window = clientApp(client,self.userName)
+        window.show()
+        
     def GetMess_(self):
         while 1:
             mess = client.recv(SIZE).decode(FORMAT)
             ic(mess)
             if mess:
-                self.login = True
+                print('Login....')
+                signaller.createClientApp.emit()
+                break
             else:
                 self.login = False
                 
