@@ -2,6 +2,7 @@ import mysql.connector
 from PySide6.QtWidgets import QLabel, QSizePolicy, QGridLayout, QWidget, QApplication, QLineEdit, QPushButton, QVBoxLayout, QTextEdit
 from PySide6.QtGui import QPainter
 from PySide6.QtCore import Qt
+from abc import ABC, abstractmethod, ABCMeta
 import sys
 
 db = mysql.connector.connect(
@@ -33,11 +34,48 @@ class ShadowLineEdit(QLineEdit):
        super(ShadowLineEdit, self).paintEvent(event)
   
   
-  
-class RegisterWindow_(QWidget):
+class LoginWindow_(QWidget):
   def __init__(self):
     super().__init__()
     
+    self.setWindowTitle("Login Window")
+    
+    self.UI_()
+    
+  def UI_(self):
+    self.regWin = RegisterWindow_()
+
+    self.mainLayout = QVBoxLayout()
+    
+    appName = QLabel("Some App")
+    self.mainLayout.addWidget(appName)
+
+    
+    shadow_line_edit = ShadowLineEdit()
+    shadow_line_edit.setPlaceholderText("Login")
+    self.mainLayout.addWidget(shadow_line_edit)
+    
+    shadow_line_edit = ShadowLineEdit()
+    shadow_line_edit.setPlaceholderText("Password")
+    self.mainLayout.addWidget(shadow_line_edit)
+    
+    sumbmitButton = QPushButton("Login")
+    self.mainLayout.addWidget(sumbmitButton)
+    
+    noAccountButton = QPushButton("I don\'t have an account")
+    noAccountButton.clicked.connect(self.openRegisterWindow_)
+    self.mainLayout.addWidget(noAccountButton)
+    
+    self.setLayout(self.mainLayout)
+    
+  def openRegisterWindow_(self):
+    self.regWin.show()
+    
+
+
+class RegisterWindow_(QWidget):
+  def __init__(self):
+    super().__init__()
     self.setWindowTitle("Register Window")
     
     self.UI_()
@@ -48,18 +86,24 @@ class RegisterWindow_(QWidget):
     appName = QLabel("Some App")
     self.mainLayout.addWidget(appName)
     
-    shadow_line_edit = ShadowLineEdit()
-    shadow_line_edit.setPlaceholderText("Name")
-    self.mainLayout.addWidget(shadow_line_edit)
+    loginInp = ShadowLineEdit()
+    loginInp.setPlaceholderText("Login")
+    self.mainLayout.addWidget(loginInp)
     
+    passwordInp = ShadowLineEdit()
+    passwordInp.setPlaceholderText("Password")
+    self.mainLayout.addWidget(passwordInp)
+    
+    sumbmitButton = QPushButton("Sumbmit")
+    self.mainLayout.addWidget(sumbmitButton)
     
     self.setLayout(self.mainLayout)
     
-
+    
 
 
 if __name__=="__main__":
   app = QApplication()
-  window = RegisterWindow_()
+  window = LoginWindow_()
   window.show()
   app.exec()
