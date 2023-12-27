@@ -5,14 +5,7 @@ from PySide6.QtCore import Qt
 from abc import ABC, abstractmethod, ABCMeta
 import sys
 
-db = mysql.connector.connect(
-  host = 'localhost',
-  user = 'root',
-  password = 'root',
-  database="logReg"
-)
 
-cursor = db.cursor()
 
 #cursor.execute('DROP TABLE users;')
 #cursor.execute("CREATE TABLE users (id INT AUTO_INCREMENT PRIMARY KEY, login VARCHAR(30), password VARCHAR(50));")
@@ -51,15 +44,16 @@ class LoginWindow_(QWidget):
     self.mainLayout.addWidget(appName)
 
     
-    shadow_line_edit = ShadowLineEdit()
-    shadow_line_edit.setPlaceholderText("Login")
-    self.mainLayout.addWidget(shadow_line_edit)
+    loginInp = ShadowLineEdit()
+    loginInp.setPlaceholderText("Login")
+    self.mainLayout.addWidget(loginInp)
     
-    shadow_line_edit = ShadowLineEdit()
-    shadow_line_edit.setPlaceholderText("Password")
-    self.mainLayout.addWidget(shadow_line_edit)
+    passwordInp = ShadowLineEdit()
+    passwordInp.setPlaceholderText("Password")
+    self.mainLayout.addWidget(passwordInp)
     
     sumbmitButton = QPushButton("Login")
+    sumbmitButton.clicked.connect(lambda: self.Login_(loginInp.text(), passwordInp.text()))
     self.mainLayout.addWidget(sumbmitButton)
     
     noAccountButton = QPushButton("I don\'t have an account")
@@ -67,6 +61,34 @@ class LoginWindow_(QWidget):
     self.mainLayout.addWidget(noAccountButton)
     
     self.setLayout(self.mainLayout)
+    
+  def Login_(self, login: str, password: str) -> int:
+    db = mysql.connector.connect(
+      host = 'localhost',
+      user = 'root',
+      password = 'root',
+      database="logReg"
+    )
+    cursor = db.cursor()#buffered=True
+    
+    cursor.execute(f'SELECT login, password from users WHERE login="{login}";')
+    
+    try:
+      usr = cursor.fetchall()[0]
+      print(usr)
+    except: 
+      print(f"User {login}, not found :/")
+      return 0
+    
+    
+    if usr[1]==password:
+      print(f"Logging into {login}")
+      db.close()
+      return 1
+    else:
+      print("Wrong Password!")
+      db.close()
+      return 1
     
   def openRegisterWindow_(self):
     self.regWin.show()
@@ -95,10 +117,44 @@ class RegisterWindow_(QWidget):
     self.mainLayout.addWidget(passwordInp)
     
     sumbmitButton = QPushButton("Sumbmit")
+    sumbmitButton.clicked.connect(lambda: self.addUser_(loginInp.text(), passwordInp.text()))
     self.mainLayout.addWidget(sumbmitButton)
     
     self.setLayout(self.mainLayout)
     
+  def addUser_(self, login: str, password:str) -> int:
+    if len(login)<3: 
+      print('Login can\'t be shorter than 3')
+      return 0
+    
+    if len(password)<4:
+      print('Password can\'t be shoter than 4')
+      return 0
+    
+    db = mysql.connector.connect(
+      host = 'localhost',
+      user = 'root',
+      password = 'root',
+      database="logReg"
+    )
+    cursor = db.cursor()
+    
+    cursor.execute(f'SELECT * FROM users WHERE login="{login}";') 
+    
+    print(cursor.fetchall())
+    if cursor.fetchall():
+      print("This User already exists :/")
+      db.close()
+      return 0
+    
+    cursor.execute(f'INSERT INTO users (login, password) VALUES ("{login}", "{password}")')
+    
+    db.commit()
+    
+    print(f'User {login}, {password} Added')
+    db.close()
+    
+    return 1
     
 
 
@@ -107,3 +163,17 @@ if __name__=="__main__":
   window = LoginWindow_()
   window.show()
   app.exec()
+  
+  
+db = mysql.connector.connect(
+      host = 'localhost',
+      user = 'root',
+      password = 'root',
+      database="logReg"
+)
+cursor = db.cursor()
+
+cursor.execute('SELECT * FROM users')
+
+for i in cursor:
+  print(i)
