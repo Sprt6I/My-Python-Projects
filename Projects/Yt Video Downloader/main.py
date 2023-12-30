@@ -5,9 +5,9 @@ from PySide6.QtCore import Qt
 
 PATH = "/home/deleted/Videos/"
 
-link = "https://www.youtube.com/watch?v=QsR8zBh6EdE"
+#link = "https://www.youtube.com/watch?v=QsR8zBh6EdE"
 
-ytVid = yt.YouTube(link)
+
 
 """for stream in ytVid.streams:
   if stream.resolution:
@@ -44,6 +44,7 @@ class YtDownloader(QWidget):
     
     pathToVideo = ShadowLineEdit()
     pathToVideo.setPlaceholderText("PATH TO VIDEO: https://www.youtube.com/watch?v=QsR8zBh6EdE")
+    pathToVideo.textChanged.connect(lambda: self.AddQualities_(pathToVideo.text()))
     mainLayout.addWidget(pathToVideo)
     
     pathToSave = ShadowLineEdit()
@@ -54,10 +55,28 @@ class YtDownloader(QWidget):
     self.warningLabel.setStyleSheet("color: red;")
     mainLayout.addWidget(self.warningLabel)
     
-    qualities = QComboBox()
+    self.qualities = QComboBox()
+        
+    mainLayout.addWidget(self.qualities)
     
+    sumbmitButton = QPushButton("Download")
+    sumbmitButton.clicked.connect(lambda: self.Download(pathToVideo.text(), pathToSave.text(), self.qualities.currentText()))
+    mainLayout.addWidget(sumbmitButton)
+      
+    
+    self.setLayout(mainLayout)
+    
+  def AddQualities_(self, link: str) -> int:
+    self.qualities.clear()
+    try:
+      self.ytVid = yt.YouTube(f"{link}")
+    except:
+      self.warningLabel.setText("Wrong Link !")
+      return 0
+    
+    self.warningLabel.setText("")
     arr= []
-    for stream in ytVid.streams:
+    for stream in self.ytVid.streams:
       if stream.resolution and stream.resolution not in arr:
         arr.append(stream.resolution)
     
@@ -66,16 +85,9 @@ class YtDownloader(QWidget):
     arr = arr[::-1]
     
     for i in arr:
-      qualities.addItem(i)
-        
-    mainLayout.addWidget(qualities)
+      self.qualities.addItem(i)
+    return 1
     
-    sumbmitButton = QPushButton("Download")
-    sumbmitButton.clicked.connect(lambda: self.Download(pathToVideo.text(), pathToSave.text(), qualities.currentText()))
-    mainLayout.addWidget(sumbmitButton)
-      
-    
-    self.setLayout(mainLayout)
     
   def Download(self, pathToVid: str, pathToSave: str, quality:str) -> int:
     if not pathToVid:
@@ -86,13 +98,15 @@ class YtDownloader(QWidget):
       return 0
     if not quality:
       self.warningLabel.setText("No Quality Choosen !")
+      return 0
     
     print(pathToVid)
     print(pathToSave)
     print(quality)
     
     try:
-      ytVid.streams.filter(res=quality).first().download(pathToSave)
+      self.ytVid.streams.filter(res=quality).first().download(pathToSave)
+      self.warningLabel.setText("")
       return 1
     except:
       self.warningLabel.setText("Some Error Occurred :/")
