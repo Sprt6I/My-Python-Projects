@@ -3,16 +3,7 @@ from PySide6.QtWidgets import QLabel, QSizePolicy, QGridLayout, QWidget, QApplic
 from PySide6.QtGui import QPainter
 from PySide6.QtCore import Qt
 
-PATH = "/home/deleted/Videos/"
 
-#link = "https://www.youtube.com/watch?v=QsR8zBh6EdE"
-
-
-
-"""for stream in ytVid.streams:
-  if stream.resolution:
-    print(stream.resolution)"""
-    
     
 class ShadowLineEdit(QLineEdit): #Special QLabel with "Shadow text"
    def __init__(self, *args, **kwargs):
@@ -67,8 +58,18 @@ class YtDownloader(QWidget):
     self.setLayout(mainLayout)
     
   def AddQualities_(self, link: str) -> int:
-    self.qualities.clear()
-    try:
+    """Add Qualities OF Video To "self.qualities" (QComboBox)
+
+    Args:
+        link (str): Link To Video
+
+    Returns:
+        int: 1 If Everything Works Correctly Else 0
+    """
+    
+    
+    self.qualities.clear() #Clears Previous Qualities
+    try: #Checks Link To Video
       self.ytVid = yt.YouTube(f"{link}")
     except:
       self.warningLabel.setText("Wrong Link !")
@@ -76,7 +77,7 @@ class YtDownloader(QWidget):
     
     self.warningLabel.setText("")
     arr= []
-    for stream in self.ytVid.streams:
+    for stream in self.ytVid.streams: #Add Qualities To List
       if stream.resolution and stream.resolution not in arr:
         arr.append(stream.resolution)
     
@@ -84,12 +85,24 @@ class YtDownloader(QWidget):
     
     arr = arr[::-1]
     
-    for i in arr:
+    for i in arr: #Adds Qualities From List To "self.qualities"
       self.qualities.addItem(i)
     return 1
     
     
   def Download(self, pathToVid: str, pathToSave: str, quality:str) -> int:
+    """Downloads Video From Yt And Saves It On Pc
+
+    Args:
+        pathToVid (str): Path To Video
+        pathToSave (str): Path For Saving Video
+        quality (str): Quality Of Downloading Video
+
+    Returns:
+        int: 1 If Everything Works Correctly Else 0
+    """
+    
+    
     if not pathToVid:
       self.warningLabel.setText("No Video Path !")
       return 0
@@ -119,4 +132,3 @@ if __name__ == "__main__":
   appWindow = YtDownloader()
   appWindow.show()
   app.exec()
-#ytVid.streams.filter(res="720p").first().download(PATH)
