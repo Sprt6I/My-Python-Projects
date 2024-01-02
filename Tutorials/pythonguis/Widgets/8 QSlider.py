@@ -18,12 +18,11 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
 )
 
-
-class MyApp__(QMainWindow):
+class MainApp__(QMainWindow):
   def __init__(self):
     super().__init__()
     
-    self.setWindowTitle("Some App?")
+    self.setWindowTitle("My App?")
     
     self.UI_()
     
@@ -31,20 +30,19 @@ class MyApp__(QMainWindow):
     mainWidget = QWidget()
     mainLayout = QVBoxLayout()
     
-    spinBox = QDoubleSpinBox()
-    spinBox.lineEdit().setReadOnly(True)
+    slider = QSlider(Qt.Orientation.Horizontal)
     
-    spinBox.setMinimum(-10)
-    spinBox.setMaximum(3.5)
-    spinBox.setRange(-10, 3.5)
+    slider.setMinimum(0)
+    slider.setMaximum(100)
     
-    spinBox.setPrefix('$')
-    spinBox.setSuffix("c")
-    spinBox.setSingleStep(3)
-    spinBox.valueChanged.connect(self.ValueChanged_)
-    spinBox.textChanged.connect(self.ValueChangedStr_)
+    slider.setSingleStep(1)
     
-    mainLayout.addWidget(spinBox)
+    slider.valueChanged.connect(self.ValueChanged_)
+    slider.sliderMoved.connect(self.SliderPosition_)
+    slider.sliderPressed.connect(self.SliderPressed_)
+    slider.sliderReleased.connect(self.SliderReleased_)
+    
+    mainLayout.addWidget(slider)
     
     mainWidget.setLayout(mainLayout)
     
@@ -53,14 +51,20 @@ class MyApp__(QMainWindow):
   def ValueChanged_(self, value):
     print(value)
     
-  def ValueChangedStr_(self, strVal):
-    print(strVal)
+  def SliderPosition_(self, position):
+    print(position)
+    
+  def SliderPressed_(self):
+    print("Slider Pressed !")
+    
+  def SliderReleased_(self):
+    print("Released")
     
     
-if __name__=="__main__":
+if __name__ == "__main__":
   app = QApplication(sys.argv)
   
-  win = MyApp__()
+  win = MainApp__()
   win.show()
   
   app.exec()

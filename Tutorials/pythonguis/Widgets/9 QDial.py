@@ -18,12 +18,11 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
 )
 
-
 class MyApp__(QMainWindow):
   def __init__(self):
     super().__init__()
     
-    self.setWindowTitle("Some App?")
+    self.setWindowTitle("My App?")
     
     self.UI_()
     
@@ -31,30 +30,32 @@ class MyApp__(QMainWindow):
     mainWidget = QWidget()
     mainLayout = QVBoxLayout()
     
-    spinBox = QDoubleSpinBox()
-    spinBox.lineEdit().setReadOnly(True)
+    dial = QDial()
+    dial.setRange(0, 360)
+    dial.setSingleStep(1)
     
-    spinBox.setMinimum(-10)
-    spinBox.setMaximum(3.5)
-    spinBox.setRange(-10, 3.5)
-    
-    spinBox.setPrefix('$')
-    spinBox.setSuffix("c")
-    spinBox.setSingleStep(3)
-    spinBox.valueChanged.connect(self.ValueChanged_)
-    spinBox.textChanged.connect(self.ValueChangedStr_)
-    
-    mainLayout.addWidget(spinBox)
+    dial.valueChanged.connect(self.ValueChanged_)
+    dial.sliderMoved.connect(self.DialPosition_)
+    dial.sliderPressed.connect(self.DialPressed_)
+    dial.sliderReleased.connect(self.DialReleased_)
+
+    mainLayout.addWidget(dial)
     
     mainWidget.setLayout(mainLayout)
     
     self.setCentralWidget(mainWidget)
     
-  def ValueChanged_(self, value):
-    print(value)
+  def ValueChanged_(self, val):
+    print(val)
     
-  def ValueChangedStr_(self, strVal):
-    print(strVal)
+  def DialPosition_(self, pos):
+    print(f"Position: {pos}")
+
+  def DialPressed_(self):
+    print("Dial Pressed !")
+    
+  def DialReleased_(self):
+    print("Dial Released !")    
     
     
 if __name__=="__main__":
