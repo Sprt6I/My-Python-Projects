@@ -17,6 +17,14 @@ class SecWin__(QMainWindow):
     lab = QLabel("Idk")
     mainLayout.addWidget(lab)
     
+    hidBut = QPushButton("Hide")
+    hidBut.clicked.connect(self.hide)
+    mainLayout.addWidget(hidBut)
+    
+    hidClose = QPushButton("Close")
+    hidClose.clicked.connect(self.close)
+    mainLayout.addWidget(hidClose)
+    
     mainWidget.setLayout(mainLayout)
     
     self.setCentralWidget(mainWidget)
@@ -30,6 +38,8 @@ class MainApp__(QMainWindow):
     super().__init__()
     
     self.setWindowTitle("Main App")
+    
+    self.win = None
     
     self.UI_()
     
@@ -46,8 +56,10 @@ class MainApp__(QMainWindow):
     self.setCentralWidget(mainWidget)
     
   def NewWindow_(self):
-    self.win = SecWin__()
+    if not self.win:
+      self.win = SecWin__()
     self.win.show()
+    #self.win.hide()
     
 
 if __name__=="__main__":
