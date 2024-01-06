@@ -5,31 +5,37 @@ class Map__():
   def __init__(self, player):
     self.player = player
     
+    self.backPlayerPos = [player.pos[0], player.pos[1]]
+    
   def CreateMap_(self,heigth, width):
     self.map = []
     
     for i in range(heigth):
-      self.map.append([str(i)*width])
+      self.map.append(['.'*width])
       
     temp = ''.join(self.map[self.player.pos[0]])
-    print(temp)
-    print(str(self.player.pos[1]))
     
     temp = [val if indx!=self.player.pos[1] else 'P' for indx,val in enumerate(temp)]
     
-    print(temp)
     self.map[self.player.pos[0]] = temp
     
   def ShowMap_(self):
     
-    temp = ''.join(self.map[self.player.pos[0]])
-    #print(temp)
-    #print(str(self.player.pos[1]))
+    ''' Removing Last Player Position '''
+    temp = self.map[self.backPlayerPos[0]]
+    temp = [val if indx!=self.backPlayerPos[1] else '.' for indx, val in enumerate(temp)]
+    self.map[self.backPlayerPos[0]] = temp
     
-    temp = [val if indx!=self.player.pos[1] else 'P' for indx,val in enumerate(temp)]
+    ''' Moving Player On Map '''
+    temp = ''.join(self.map[self.player.pos[1]])
     
-    #print(temp)
-    self.map[self.player.pos[0]] = temp
+    temp = ['.' if indx!=self.player.pos[0] else 'P' for indx,val in enumerate(temp)]
+    self.map[self.player.pos[1]] = temp
+    
+    
+    ''' Saving Player Last Pos '''
+    self.backPlayerPos[0] = self.map.index(temp)
+    self.backPlayerPos[1] = self.player.pos[0]
     
     for i in self.map:
       s = ''
@@ -57,6 +63,12 @@ class Game__():
     self.player = Player__()
     self.map = Map__(self.player) 
     
+    self.map.CreateMap_(10,10)
+    self.map.ShowMap_
+    
+    while True:
+      self.player.Move_()
+      self.map.ShowMap_()
     
 
 
