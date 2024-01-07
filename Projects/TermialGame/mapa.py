@@ -7,6 +7,7 @@ class Map__():
     
     self.itemList = []
     self.enemyList = []
+    self.backEnemyPos = []
     
   def CreateMap_(self,heigth, width, itemList = [],enemyList = []):
     self.map = []
@@ -27,6 +28,7 @@ class Map__():
             
         for enemy in enemyList:
           if a==enemy.x and b==enemy.y:
+            self.backEnemyPos.append([enemy.x, enemy.y, '.'])
             s+=enemy.show
             spec+=1
             
@@ -61,13 +63,26 @@ class Map__():
     self.map[self.backPlayerPos[0]] = temp
     
     ''' Moves Enemies '''
+    for indx, enemyPos in enumerate(self.backEnemyPos):
+      temp = self.map[enemyPos[0]]
+      
+      temp = [val if indxx!=enemyPos[1] else enemyPos[2] for indxx, val in enumerate(temp)]
+      
+      self.map[enemyPos[0]] = temp
+      
+    
     for enemy in self.enemyList:
       enemy.MoveToPlayer_(self.player)
       
       temp = ''.join(self.map[enemy.x])
+      
+      placeVal = temp[enemy.y]
+      
       temp = [val if indx!=enemy.y else enemy.show for indx, val in enumerate(temp)]
       
       self.map[enemy.x] = temp
+      
+      self.backEnemyPos.append([enemy.x, enemy.y, placeVal])
     
     ''' Moving Player On Map '''
     temp = ''.join(self.map[self.player.pos[1]])
