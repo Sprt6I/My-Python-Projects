@@ -27,8 +27,7 @@ class Map__():
             
         for enemy in enemyList:
           if a==enemy.x and b==enemy.y:
-            if enemy.name=='Zombie':
-              s+='Z'
+            s+=enemy.show
             spec+=1
             
         if spec>0: #Here It Skips '.'
@@ -50,15 +49,25 @@ class Map__():
         print(self.player.PlayerStats_())
         
     ''' Checks If Player Is At The Same Place As Enemy '''
-    for enemy in self.enemyList:
+    for indx, enemy in enumerate(self.enemyList):
       if enemy.x == self.player.pos[1] and enemy.y == self.player.pos[0]:
         print(f"Fight {enemy.name} Vs Player !!!")
-        self.Fight_(enemy)
+        self.Fight_(indx, enemy)
+        
     
     ''' Removing Last Player Position '''
     temp = self.map[self.backPlayerPos[0]]
     temp = [val if indx!=self.backPlayerPos[1] else '.' for indx, val in enumerate(temp)]
     self.map[self.backPlayerPos[0]] = temp
+    
+    ''' Moves Enemies '''
+    for enemy in self.enemyList:
+      enemy.MoveToPlayer_(self.player)
+      
+      temp = ''.join(self.map[enemy.x])
+      temp = [val if indx!=enemy.y else enemy.show for indx, val in enumerate(temp)]
+      
+      self.map[enemy.x] = temp
     
     ''' Moving Player On Map '''
     temp = ''.join(self.map[self.player.pos[1]])
@@ -71,13 +80,17 @@ class Map__():
     self.backPlayerPos[0] = self.map.index(temp)
     self.backPlayerPos[1] = self.player.pos[0]
     
+    
+    
     for i in self.map:
       s = ''
       for a in i:
         s+=a
       print(s)
+    
       
-  def Fight_(self, enemy):
+      
+  def Fight_(self, indx, enemy):
     while enemy.health>0 and self.player.health>0:
           print(f'Enemy: {enemy.health}, Player: {self.player.health}')
           enemy.health-=self.player.attack
@@ -88,6 +101,7 @@ class Map__():
             exit()
           elif enemy.health<=0:
             print(f'You killed {enemy.name} !')
+            self.enemyList.pop(indx)
             
           
           time.sleep(0.4)

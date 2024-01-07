@@ -2,7 +2,7 @@ from mapa import Map__
 from player import Player__
 from items import *
 from enemies import *
-    
+
     
 class Game__():
   def __init__(self):
