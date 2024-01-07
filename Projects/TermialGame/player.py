@@ -6,15 +6,36 @@ class Player__():
     self.attack = 15
     self.manna = 5
     
-  def Move_(self):
+  def Move_(self, mapHight:int, mapWidth:int):
     direction = input("Move: (wsad): ")
-    
+
     match direction:
-      case 'w': self.pos[1]-=1
-      case 's': self.pos[1]+=1
-      case 'a': self.pos[0]-=1
-      case 'd': self.pos[0]+=1
-      case _: self.Move_()
+      case 'w': 
+        if self.pos[1]-1 >= 0:
+          self.pos[1]-=1
+        else:
+          self.Move_(mapHight, mapWidth)
+          
+      case 's': 
+        if self.pos[1]+1 < mapHight:
+          self.pos[1]+=1
+        else:
+          self.Move_(mapHight, mapWidth)
+          
+      case 'a': 
+        if self.pos[0]-1 >= 0:
+          self.pos[0]-=1
+        else:
+          self.Move_(mapHight, mapWidth)
+          
+      case 'd': 
+        if self.pos[0]+1 < mapWidth:
+          self.pos[0]+=1
+        else:
+          self.Move_(mapHight, mapWidth)
+          
+      case _: self.Move_(mapHight, mapWidth)
+    
       
   def AddAtributes_(self, stat, value):
     if stat=='health':

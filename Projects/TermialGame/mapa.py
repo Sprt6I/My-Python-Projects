@@ -41,15 +41,35 @@ class Map__():
       
     
   def ShowMap_(self):
-    
+    print('\033c', end='')
     ''' Checks If Player Take Item (Same Position) '''
-    for item in self.itemList:
+    for indx, item in enumerate(self.itemList):
       if item.x == self.player.pos[0] and item.y == self.player.pos[1]:
-        print(self.player.PlayerStats_())
-        print(item.name)
-        self.player.AddAtributes_("attack", item.stat)
-        print(self.player.PlayerStats_())
+        temp = self.map[item.y]
+        print(f"You Found {item.name}, {item.stat[0].upper()+item.stat[1:]}: {self.player.attack} -> {self.player.attack+item.add}")
+        self.player.AddAtributes_(item.stat, item.add)
         
+        temp = [val if indx!=item.x else '.' for indx, val in enumerate(temp)]
+        
+        self.map[item.y] = temp
+        #print(self.player.PlayerStats_())
+        
+        self.itemList.pop(indx)
+        
+    self.RemoveLasPos_()
+    
+    self.MoveEnemies_()
+    
+
+    self.MovePlayer_()
+    
+    for i in self.map:
+      s = ''
+      for a in i:
+        s+=a
+      print(s)
+      
+  def RemoveLasPos_(self):
     ''' Checks If Player Is At The Same Place As Enemy '''
     for indx, enemy in enumerate(self.enemyList):
       if enemy.x == self.player.pos[1] and enemy.y == self.player.pos[0]:
@@ -60,8 +80,9 @@ class Map__():
     ''' Removing Last Player Position '''
     temp = self.map[self.backPlayerPos[0]]
     temp = [val if indx!=self.backPlayerPos[1] else '.' for indx, val in enumerate(temp)]
-    self.map[self.backPlayerPos[0]] = temp
-    
+    self.map[self.backPlayerPos[0]] = temp      
+      
+  def MoveEnemies_(self):
     ''' Moves Enemies '''
     for indx, enemyPos in enumerate(self.backEnemyPos):
       temp = self.map[enemyPos[0]]
@@ -84,6 +105,8 @@ class Map__():
       
       self.backEnemyPos.append([enemy.x, enemy.y, placeVal])
     
+      
+  def MovePlayer_(self):
     ''' Moving Player On Map '''
     temp = ''.join(self.map[self.player.pos[1]])
     
@@ -94,16 +117,6 @@ class Map__():
     ''' Saving Player Last Pos '''
     self.backPlayerPos[0] = self.map.index(temp)
     self.backPlayerPos[1] = self.player.pos[0]
-    
-    
-    
-    for i in self.map:
-      s = ''
-      for a in i:
-        s+=a
-      print(s)
-    
-      
       
   def Fight_(self, indx, enemy):
     while enemy.health>0 and self.player.health>0:
