@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QSizePolicy,QMainWindow, QGridLayout, QWidget, QApplication, QLineEdit, QPushButton, QVBoxLayout, QTextEdit, QScrollArea
+from PySide6.QtWidgets import QSizePolicy,QMainWindow, QGridLayout, QWidget, QApplication, QLineEdit, QPushButton, QVBoxLayout, QTextEdit, QScrollArea, QListWidget, QListWidgetItem
 from PySide6.QtCore import Qt
 import sys
 import os
@@ -17,6 +17,11 @@ class FolderManager__(QMainWindow):
     self.itemsWidget = QWidget()
     self.itemsLayout = QVBoxLayout()
     self.scroll = QScrollArea() #type: ignore
+    
+    self.itemsLayout.setSpacing(0)
+    self.itemsLayout.setContentsMargins(0, 0, 0, 0)
+    self.mainLayout.setSpacing(0)
+    self.mainLayout.setContentsMargins(0, 0, 0, 0)
     
     
     self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn) #type: ignore
@@ -52,16 +57,16 @@ class FolderManager__(QMainWindow):
       but.clicked.connect(partial(self.ChangeLoc_, i))
       self.itemsLayout.addWidget(but)
     
-    #self.update()
+    self.update()
     #return os.listdir(os.getcwd())
   
   
   def ChangeLoc_(self, where: str):
     print(where)
-    for i in range(self.itemsLayout.count()):
-        child = self.itemsLayout.itemAt(i).widget()
-        if child:
-            child.deleteLater()
+    while self.itemsLayout.count():
+       child = self.itemsLayout.takeAt(0).widget()
+       if child:
+           child.deleteLater()
             
     os.chdir(where)
             
@@ -69,6 +74,7 @@ class FolderManager__(QMainWindow):
     #self.adjustSize()
             
     self.CreateButtons_()
+    self.itemsLayout.addStretch()
     self.Directories.setText(os.getcwd())
     
   def ChangedDirectory_(self, text):
