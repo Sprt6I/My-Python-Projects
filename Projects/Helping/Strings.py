@@ -116,4 +116,4 @@ def SwapCase_(string: str) -> str:
 
 def ZFill_(string: str, letter: str, numOfLetter: int, start=True) -> str:
   if start:return letter*numOfLetter+string
-  return string+letter*numOfLetter
+  return string+letter*numOfLetter  
