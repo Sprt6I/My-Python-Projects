@@ -23,13 +23,13 @@ class Game__():
     self.xpos = 50
     self.ypos = 50
     
-    self.xStep = 10
-    self.yStep = 10
+    self.xStep = 2
+    self.yStep = 2
     
     self.image = pygame.image.load("Trying Modules/PyGame/dr0id tutorial/player.png")
     self.image.set_colorkey((255,0,255))
     self.image.set_alpha(128)
-    #self.screen.blit(self.image, (26,26))
+    self.screen.blit(self.image, (self.xpos,self.ypos))
     
     pygame.display.flip()
     
@@ -38,9 +38,11 @@ class Game__():
       for event in pygame.event.get():
         if event.type==pygame.QUIT:
           return 0
-        self.xpos+=self.xStep
-        
-        self.screen.blit(self.image, (self.xpos,self.ypos))
+        elif event.type==pygame.KEYDOWN:
+          if event.key==pygame.K_w and self.ypos-self.yStep>0:
+            self.screen.fill((20,90,80))
+            self.ypos-=self.yStep
+            self.screen.blit(self.image, (self.xpos,self.ypos))
         
         
         pygame.display.flip()
