@@ -9,26 +9,43 @@ class Game__():
     
     pygame.display.set_caption("My Game")
     
-    screen = pygame.display.set_mode((240,180))
+    self.screen = pygame.display.set_mode((240,180))
     
-    screen.fill((20,90,80))
+    self.screen.fill((20,90,80))
     
+    self.Player_()
     
-    image = pygame.image.load("Trying Modules/PyGame/dr0id tutorial/player.png")
-    image.set_colorkey((255,0,255))
-    image.set_alpha(128)
-    screen.blit(image, (26,26))
-    
-    pygame.display.flip()
     
     
     self.Game_()
+    
+  def Player_(self):
+    self.xpos = 50
+    self.ypos = 50
+    
+    self.xStep = 10
+    self.yStep = 10
+    
+    self.image = pygame.image.load("Trying Modules/PyGame/dr0id tutorial/player.png")
+    self.image.set_colorkey((255,0,255))
+    self.image.set_alpha(128)
+    #self.screen.blit(self.image, (26,26))
+    
+    pygame.display.flip()
     
   def Game_(self):
     while 1:
       for event in pygame.event.get():
         if event.type==pygame.QUIT:
           return 0
+        self.xpos+=self.xStep
+        
+        self.screen.blit(self.image, (self.xpos,self.ypos))
+        
+        
+        pygame.display.flip()
+        
+        
         
         
         
