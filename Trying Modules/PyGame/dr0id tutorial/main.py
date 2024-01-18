@@ -35,7 +35,7 @@ class Game__():
     
   def Game_(self):
     while 1:
-      for event in pygame.event.get():
+      for event in pygame.event.get():` -`
         if event.type==pygame.QUIT:
           return 0
         elif event.type==pygame.KEYDOWN:
