@@ -1,5 +1,14 @@
 from PySide6.QtWidgets import QSizePolicy, QGridLayout, QWidget, QApplication, QLineEdit, QPushButton, QVBoxLayout, QTextEdit, QMainWindow, QWidget, QHBoxLayout
 import sys
+import mysql.connector
+
+mydb = mysql.connector.connect(
+  host="localhost",
+  user="root",
+  password=""
+)
+print(mydb)
+
 '''create servers database with servers with channels, users like discord SQL (Yep chat gpt)
 
 
