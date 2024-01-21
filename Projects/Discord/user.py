@@ -9,37 +9,22 @@ mydb = mysql.connector.connect(
 )
 print(mydb)
 
-'''create servers database with servers with channels, users like discord SQL (Yep chat gpt)
-
-
-CREATE TABLE Servers (
-   ServerId INT PRIMARY KEY,
-   ServerName VARCHAR(255) NOT NULL
-);
-
-CREATE TABLE Channels (
-   ChannelId INT PRIMARY KEY,
-   ChannelName VARCHAR(255) NOT NULL,
-   ServerId INT,
-   FOREIGN KEY (ServerId) REFERENCES Servers(ServerId)
-);
-
-CREATE TABLE Users (
-   UserId INT PRIMARY KEY,
-   Username VARCHAR(255) NOT NULL,
-   PasswordHash VARCHAR(255) NOT NULL
-);
-
-CREATE TABLE UserChannels (
-   UserId INT,
-   ChannelId INT,
-   PRIMARY KEY (UserId, ChannelId),
-   FOREIGN KEY (UserId) REFERENCES Users(UserId),
-   FOREIGN KEY (ChannelId) REFERENCES Channels(ChannelId)
-);
-
+# EVERY SERVER IS OWN DATABASE
 
 '''
+
+Database Server:
+* Users:
+* Chanells:
+
+
+Database Users:
+ *  Main:
+  - Name
+  - Password
+
+'''
+
 class Discord__(QMainWindow):
   def __init__(self):
     super().__init__()
