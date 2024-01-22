@@ -11,6 +11,7 @@ print(mydb)
 
 '''create servers database with servers with channels, users like discord SQL (Yep chat gpt)
 
+idk....
 
 CREATE TABLE Servers (
    ServerId INT PRIMARY KEY,
